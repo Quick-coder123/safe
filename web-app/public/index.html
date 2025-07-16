@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор оренди індивідуального сейфу</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            text-align: center;
+        }
+        
+        .tab-content {
+            padding: 30px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #4facfe;
+            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: none;
+        }
+        
+        .result-total {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .nav-tabs .nav-link {
+            border-radius: 15px 15px 0 0;
+            border: none;
+            color: #666;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+        
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .input-group-text {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <!-- Header -->
+            <div class="header">
+                <h1><i class="fas fa-vault"></i> Калькулятор оренди індивідуального сейфу</h1>
+                <p class="mb-0">Швидкий та точний розрахунок вартості оренди</p>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <ul class="nav nav-tabs" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="calculator-tab" data-bs-toggle="tab" data-bs-target="#calculator" type="button" role="tab">
+                        <i class="fas fa-calculator"></i> Калькулятор
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="clients-tab" data-bs-toggle="tab" data-bs-target="#clients" type="button" role="tab">
+                        <i class="fas fa-users"></i> Клієнти
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="help-tab" data-bs-toggle="tab" data-bs-target="#help" type="button" role="tab">
+                        <i class="fas fa-question-circle"></i> Довідка
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="mainTabContent">
+                <!-- Calculator Tab -->
+                <div class="tab-pane fade show active" id="calculator" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-cog"></i> Параметри оренди</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="calculatorForm">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="category" class="form-label">Категорія сейфу</label>
+                                                    <select class="form-select" id="category" required>
+                                                        <option value="1 категорія">1 категорія</option>
+                                                        <option value="2 категорія">2 категорія</option>
+                                                        <option value="3 категорія">3 категорія</option>
+                                                        <option value="4 категорія">4 категорія</option>
+                                                        <option value="5 категорія">5 категорія</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="contractType" class="form-label">Тип договору</label>
+                                                    <select class="form-select" id="contractType">
+                                                        <option value="Новий">Новий</option>
+                                                        <option value="Пролонгація">Пролонгація</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="days" class="form-label">Кількість днів</label>
+                                                    <input type="number" class="form-control" id="days" value="30" min="1" max="365" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="startDate" class="form-label">Дата початку</label>
+                                                    <input type="date" class="form-control" id="startDate" required>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="coverage">
+                                                        <label class="form-check-label" for="coverage">
+                                                            <strong>Страхування</strong>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="attorneyCount" class="form-label">Кількість довіреностей</label>
+                                                    <input type="number" class="form-control" id="attorneyCount" value="0" min="0" max="10">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="penalty" class="form-label">Сума штрафу (грн)</label>
+                                                    <input type="number" class="form-control" id="penalty" value="0" min="0" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Дата закінчення</label>
+                                                    <input type="text" class="form-control" id="endDate" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fas fa-calculator"></i> Розрахувати
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="result-card">
+                                <h5><i class="fas fa-receipt"></i> Результати розрахунку</h5>
+                                <div id="calculationResults">
+                                    <div class="loading" id="loading">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Розрахунок...</span>
+                                        </div>
+                                        <p>Розрахунок...</p>
+                                    </div>
+                                    <div id="results" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-8">Вартість оренди:</div>
+                                            <div class="col-4 text-end"><strong><span id="rentCost">0.00</span> грн</strong></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-8">Страхування:</div>
+                                            <div class="col-4 text-end"><strong><span id="coverageCost">0.00</span> грн</strong></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-8">Довіреності:</div>
+                                            <div class="col-4 text-end"><strong><span id="attorneyCost">0.00</span> грн</strong></div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-8">Штраф:</div>
+                                            <div class="col-4 text-end"><strong><span id="penaltyCost">0.00</span> грн</strong></div>
+                                        </div>
+                                        <div class="result-total">
+                                            Загальна сума: <span id="totalCost">0.00</span> грн
+                                        </div>
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-success" onclick="generateReport()">
+                                                <i class="fas fa-file-alt"></i> Генерувати звіт
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clients Tab -->
+                <div class="tab-pane fade" id="clients" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-user-plus"></i> Додати нового клієнта</h5>
+                                </div>
+                                <div class="card-body">
+                                    <form id="clientForm">
+                                        <div class="mb-3">
+                                            <label for="clientName" class="form-label">ПІБ *</label>
+                                            <input type="text" class="form-control" id="clientName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="clientIpn" class="form-label">ІПН</label>
+                                            <input type="text" class="form-control" id="clientIpn">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="clientIban" class="form-label">IBAN</label>
+                                            <input type="text" class="form-control" id="clientIban" placeholder="UA...">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="clientPhone" class="form-label">Телефон</label>
+                                            <input type="tel" class="form-control" id="clientPhone" placeholder="+380...">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="clientEmail" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="clientEmail">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Додати клієнта
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-list"></i> Список клієнтів</h5>
+                                    <button class="btn btn-sm btn-outline-primary float-end" onclick="loadClients()">
+                                        <i class="fas fa-sync-alt"></i> Оновити
+                                    </button>
+                                </div>
+                                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                    <div id="clientsList">
+                                        <div class="text-center">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">Завантаження...</span>
+                                            </div>
+                                            <p>Завантаження клієнтів...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help Tab -->
+                <div class="tab-pane fade" id="help" role="tabpanel">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-info-circle"></i> Тарифна система</h5>
+                                </div>
+                                <div class="card-body">
+                                    <h6>Денні ставки (грн/день):</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Термін</th>
+                                                    <th>1 кат</th>
+                                                    <th>2 кат</th>
+                                                    <th>3 кат</th>
+                                                    <th>4 кат</th>
+                                                    <th>5 кат</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1-30 днів</td>
+                                                    <td>39₴</td>
+                                                    <td>51₴</td>
+                                                    <td>63₴</td>
+                                                    <td>63₴</td>
+                                                    <td>63₴</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>31-90 днів</td>
+                                                    <td>25₴</td>
+                                                    <td>26₴</td>
+                                                    <td>28₴</td>
+                                                    <td>35₴</td>
+                                                    <td>43₴</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>91-180 днів</td>
+                                                    <td>22₴</td>
+                                                    <td>24₴</td>
+                                                    <td>26₴</td>
+                                                    <td>33₴</td>
+                                                    <td>41₴</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>181-365 днів</td>
+                                                    <td>20₴</td>
+                                                    <td>22₴</td>
+                                                    <td>24₴</td>
+                                                    <td>29₴</td>
+                                                    <td>40₴</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <h6 class="mt-4">Страхування:</h6>
+                                    <ul>
+                                        <li>1-90 днів: <strong>285₴</strong></li>
+                                        <li>91-180 днів: <strong>370₴</strong></li>
+                                        <li>181-270 днів: <strong>430₴</strong></li>
+                                        <li>271-365 днів: <strong>550₴</strong></li>
+                                    </ul>
+
+                                    <h6 class="mt-4">Додаткові послуги:</h6>
+                                    <ul>
+                                        <li>Довіреність: <strong>300₴</strong> за штуку</li>
+                                        <li>Депозит: <strong>3000₴</strong> (для довідки)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-question"></i> Як користуватися</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ol>
+                                        <li>Оберіть категорію сейфу та тип договору</li>
+                                        <li>Вкажіть кількість днів оренди</li>
+                                        <li>Встановіть дату початку</li>
+                                        <li>За потреби відмітьте страхування</li>
+                                        <li>Додайте довіреності та штрафи</li>
+                                        <li>Натисніть "Розрахувати"</li>
+                                        <li>Згенеруйте звіт для клієнта</li>
+                                    </ol>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <strong>Підказка:</strong> Розрахунок відбувається автоматично при зміні будь-якого параметра.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Ініціалізація
+        document.addEventListener('DOMContentLoaded', function() {
+            // Встановлення поточної дати
+            document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
+            
+            // Автоматичний розрахунок при зміні параметрів
+            const form = document.getElementById('calculatorForm');
+            const inputs = form.querySelectorAll('input, select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', calculateSafe);
+                input.addEventListener('input', calculateSafe);
+            });
+            
+            // Початковий розрахунок
+            calculateSafe();
+            
+            // Завантаження клієнтів
+            loadClients();
+        });
+
+        // Функція розрахунку
+        async function calculateSafe() {
+            const formData = {
+                category: document.getElementById('category').value,
+                days: parseInt(document.getElementById('days').value),
+                start_date: document.getElementById('startDate').value,
+                coverage: document.getElementById('coverage').checked,
+                attorney_count: parseInt(document.getElementById('attorneyCount').value),
+                penalty: parseFloat(document.getElementById('penalty').value) || 0
+            };
+
+            // Показати завантаження
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+
+            try {
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Оновити результати
+                    document.getElementById('endDate').value = data.result.end_date;
+                    document.getElementById('rentCost').textContent = data.result.rent_cost.toFixed(2);
+                    document.getElementById('coverageCost').textContent = data.result.coverage_cost.toFixed(2);
+                    document.getElementById('attorneyCost').textContent = data.result.attorney_cost.toFixed(2);
+                    document.getElementById('penaltyCost').textContent = data.result.penalty_cost.toFixed(2);
+                    document.getElementById('totalCost').textContent = data.result.total_cost.toFixed(2);
+
+                    // Показати результати
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('results').style.display = 'block';
+                    
+                    // Зберегти для звіту
+                    window.currentCalculation = data.result;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Помилка розрахунку:', error);
+                alert('Помилка розрахунку: ' + error.message);
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Додавання клієнта
+        document.getElementById('clientForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const clientData = {
+                name: document.getElementById('clientName').value,
+                ipn: document.getElementById('clientIpn').value,
+                iban: document.getElementById('clientIban').value,
+                phone: document.getElementById('clientPhone').value,
+                email: document.getElementById('clientEmail').value
+            };
+
+            try {
+                const response = await fetch('/api/clients', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(clientData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Клієнта успішно додано!');
+                    document.getElementById('clientForm').reset();
+                    loadClients();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Помилка додавання клієнта:', error);
+                alert('Помилка додавання клієнта: ' + error.message);
+            }
+        });
+
+        // Завантаження списку клієнтів
+        async function loadClients() {
+            try {
+                const response = await fetch('/api/clients');
+                const data = await response.json();
+
+                if (data.success) {
+                    const clientsList = document.getElementById('clientsList');
+                    
+                    if (data.clients.length === 0) {
+                        clientsList.innerHTML = '<p class="text-muted text-center">Клієнтів поки немає</p>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.clients.forEach(client => {
+                        html += `
+                            <div class="card mb-2">
+                                <div class="card-body py-2">
+                                    <h6 class="card-title mb-1">${client.name}</h6>
+                                    <small class="text-muted">
+                                        ${client.phone ? '📞 ' + client.phone : ''}
+                                        ${client.email ? '📧 ' + client.email : ''}
+                                    </small>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    clientsList.innerHTML = html;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                console.error('Помилка завантаження клієнтів:', error);
+                document.getElementById('clientsList').innerHTML = 
+                    '<p class="text-danger text-center">Помилка завантаження клієнтів</p>';
+            }
+        }
+
+        // Генерація звіту
+        function generateReport() {
+            if (!window.currentCalculation) {
+                alert('Спочатку зробіть розрахунок!');
+                return;
+            }
+
+            const calc = window.currentCalculation;
+            const report = `
+КАЛЬКУЛЯТОР ОРЕНДИ ІНДИВІДУАЛЬНОГО СЕЙФУ
+========================================
+
+Дата розрахунку: ${new Date().toLocaleString('uk-UA')}
+
+ПАРАМЕТРИ ОРЕНДИ:
+Категорія сейфу: ${calc.category}
+Період оренди: ${calc.days} днів
+Дата початку: ${calc.start_date}
+Дата закінчення: ${calc.end_date}
+Денна ставка: ${calc.daily_rate} грн/день
+
+РОЗРАХУНОК ВАРТОСТІ:
+Вартість оренди: ${calc.rent_cost.toFixed(2)} грн
+Страхування: ${calc.coverage_cost.toFixed(2)} грн
+Довіреності: ${calc.attorney_cost.toFixed(2)} грн
+Штраф: ${calc.penalty_cost.toFixed(2)} грн
+
+ЗАГАЛЬНА СУМА: ${calc.total_cost.toFixed(2)} грн
+            `;
+
+            // Створення та завантаження файлу
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `звіт_оренда_сейфу_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
