@@ -535,7 +535,7 @@
                 }
             } catch (error) {
                 console.error('Помилка розрахунку:', error);
-                alert('Помилка розрахунку: ' + error.message);
+                alert('Помилка розрахунку. Спробуйте ще раз.');
                 document.getElementById('loading').style.display = 'none';
             }
         }
@@ -572,7 +572,7 @@
                 }
             } catch (error) {
                 console.error('Помилка додавання клієнта:', error);
-                alert('Помилка додавання клієнта: ' + error.message);
+                alert('Помилка додавання клієнта. Спробуйте ще раз.');
             }
         });
 
@@ -586,7 +586,7 @@
                     const clientsList = document.getElementById('clientsList');
                     
                     if (data.clients.length === 0) {
-                        clientsList.innerHTML = '<p class="text-muted text-center">Клієнтів поки немає</p>';
+                        clientsList.innerHTML = '<p class="text-muted text-center">Клієнтів поки немає. Додайте першого клієнта!</p>';
                         return;
                     }
 
@@ -599,6 +599,7 @@
                                     <small class="text-muted">
                                         ${client.phone ? '📞 ' + client.phone : ''}
                                         ${client.email ? '📧 ' + client.email : ''}
+                                        ${client.ipn ? 'ІПН: ' + client.ipn : ''}
                                     </small>
                                 </div>
                             </div>
@@ -612,7 +613,7 @@
             } catch (error) {
                 console.error('Помилка завантаження клієнтів:', error);
                 document.getElementById('clientsList').innerHTML = 
-                    '<p class="text-danger text-center">Помилка завантаження клієнтів</p>';
+                    '<p class="text-warning text-center">Помилка завантаження клієнтів. Функція буде доступна після першого використання.</p>';
             }
         }
 
